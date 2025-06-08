@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TRANSPORT</title>
+        <link rel="stylesheet" href="static/styles.css">
+        <link rel="stylesheet" href="static/sidemenu.css">
+        <link rel="stylesheet" href="static/nav.css">
+        <link rel="icon" type="image/png" href="static/img/favicon.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+            <div class="hamburger" onclick="toggleMenu()">☰</div>
+            <nav>
+                <div class="nav-container">
+                    <div class="nav-profile">
+                        {% if session.get('user_id') %}
+                        <a href="/profile" class="profile-btn">
+                            <span class="profile">
+                                <img src="static/img/profile.png" alt="Profile" class="profile-icon">
+                            </span>
+                        </a>
+                        {% else %}
+                        <a href="/login" class="log-button">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div id="sideMenu" class="side-menu">
+            <div class="menu-content">
+                <img src="static/img/favicon.png" alt="Logo" class="menu-logo">
+                <hr>
+                <a href="/">Home</a>
+                <a href="/profile">Profile</a>
+                <a href="/businfo">All Buses</a>
+                <a href="/emp">Attendance</a>
+                <a href="#">About</a>
+            </div>
+        </div>
+
+        <div class="road">
+            <h1 style = "text-align : center;">WELCOME TO SMART TRANSPORTATION</h1>
+            <div class="road">
+                <img src="static/img/bus1.png" alt="Bus" class="bus">
+            </div>
+        </div>
+
+        <h2>Bus Schedule</h2>
+        <button onclick="assignBuses()">Assign Buses</button>
+        <button onclick="rotateCrew()">Rotate Crew</button>
+        <button onclick="fetchRestingCrew()">Show Resting Crew</button>
+
+        <!--<h3>Active Bus Assignments:</h3>
+        <div id="busData"></div>
+
+        <h3>Resting Crew Members:</h3>
+        <div id="restingCrew"></div><-->
+
+        <script>
+        function toggleMenu() {
+            let menu = document.getElementById("sideMenu");
+            menu.style.width = menu.style.width === "250px" ? "0" : "250px";
+        }
+
+        async function assignBuses() {
+            let response = await fetch('/assign_buses', { method: 'POST' });
+            let data = await response.json();
+            alert(data.message);
+            fetchBusAssignments();
+        }
+
+        async function rotateCrew() {
+            let response = await fetch('/rotate_crew', { method: 'POST' });
+            let data = await response.json();
+            alert(data.message);
+            fetchRestingCrew();
+        }
+
+        async function fetchBusAssignments() {
+            let response = await fetch('/resting_crew');
+            let data = await response.json();
+            document.getElementById("busData").innerHTML = data.resting_crew
+                .map(item => `<p>Driver: ${item[0]}, Conductor: ${item[1]}</p>`)
+                .join("");
+        }
+
+        async function fetchRestingCrew() {
+            let response = await fetch('/resting_crew');
+            let data = await response.json();
+            document.getElementById("restingCrew").innerHTML = data.resting_crew
+                .map(item => `<p>Driver: ${item[0]}, Conductor: ${item[1]}</p>`)
+                .join("");
+        }
+
+        fetchBusAssignments();
+        fetchRestingCrew();
+        </script>
+    </body>
+</html>

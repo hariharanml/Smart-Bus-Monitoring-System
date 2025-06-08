@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TRANSPORT</title>
+        <link rel="stylesheet" href="static/sidemenu.css">
+        <link rel="icon" type="image/png" href="static/img/favicon.png">
+        
+    <script src="static/script.js" defer></script>
+    </head>
+    <body>
+        <h1>Live Camera Feed</h1>
+        <img id="videoStream" src="{{ url_for('video') }}" width="640" height="480">
+
+        <p>Detecting face... Once recognized, you will be redirected.</p>
+
+        <a href='/'>
+            <button>BACK</button>
+        </a>
+
+        <script>
+        function checkRedirect() {
+            fetch("{{ url_for('check_status') }}")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.stop) {
+                        alert("you are verrifeid!✅");
+                        window.location.href = "{{ url_for('hi') }}";  // Redirect when face detected
+                    } else {
+                        setTimeout(checkRedirect, 1000);  // Check again every second
+                    }
+                })
+                .catch(() => setTimeout(checkRedirect, 1000));  // Retry if request fails
+        }
+
+        checkRedirect();  // Start checking
+        </script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                background-image: url('static/img/background-image.png');
+                background-size: cover;
+                background-position: center;
+                margin: 0;
+                padding: 0;
+            }
+            body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: inherit;
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px);
+            z-index: -1;
+        }
+
+            h1 {
+                color: #333;
+                margin-top: 20px;
+            }
+
+            img {
+                border: 5px solid #333;
+                border-radius: 100px;
+                margin-top: 20px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            p {
+                font-size: 18px;
+                color: #f2ff00;
+                background-color: #000000; /* Red background */
+                padding: 10px;
+                border-radius: 5px;
+                font-weight: bold;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+                opacity: 0.7;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            button {
+                display: inline-block;
+                background-color: yellow;
+                color: #000;
+                font-weight: bold;
+                padding: 10px 20px;
+                border: 2px solid #000;
+                border-radius: 5px;
+                text-decoration: none;
+                font-size: 18px;
+                margin: 10px;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            }
+
+            button:hover {
+                background-color: black;
+                color: #fff701;
+            }
+
+        </style>
+    </body>
+</html>

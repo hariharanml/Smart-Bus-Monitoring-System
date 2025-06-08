@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resting Crew</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { margin: 20px auto; width: 80%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resting Crew Members</h1>
+        <table>
+            <tr>
+                <th>Driver</th>
+                <th>Conductor</th>
+                <th>Resting Since</th>
+                <th>Time Left</th>
+            </tr>
+            <tbody id="crewTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function calculateRemainingTime(startTime) {
+            const restDuration = 1.5 * 60 * 60 * 1000; // 1.5 hours in milliseconds
+            let start = new Date(startTime);
+            let now = new Date();
+            let elapsed = now - start;
+            let remaining = restDuration - elapsed;
+
+            if (remaining <= 0) {
+                return "Ready for assignment";
+            }
+
+            let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+            return `${minutes} min ${seconds} sec`;
+        }
+
+        async function fetchRestingCrew() {
+            let response = await fetch('/resting_crew');
+            let data = await response.json();
+            let tableBody = document.getElementById("crewTable");
+            tableBody.innerHTML = "";
+
+            data.resting_crew.forEach(crew => {
+                let remainingTime = calculateRemainingTime(crew[2]);
+                let row = `<tr>
+                    <td>${crew[0]}</td>
+                    <td>${crew[1]}</td>
+                    <td>${crew[2]}</td>
+                    <td>${remainingTime}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            setTimeout(fetchRestingCrew, 1000); // Refresh every second
+        }
+
+        fetchRestingCrew();
+    </script>
+</body>
+</html>
